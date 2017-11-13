@@ -1,9 +1,21 @@
 class UserController < AppController
 
+	options "*" do
+    	response.headers["Access-Control-Allow-Methods"] = "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS"
+	end
+
+	get '/' do
+		# response['Access-Control-Allow-Origin'] = '*'
+		@user = User.all
+		@user.to_json
+	end
+
 	post '/' do 
+		payload = params 
+    	payload = JSON.parse(request.body.read).symbolize_keys
 		@user = User.new
-		@user.username = params[:username]
-		@user.password = params[:password]
+		@user.username = payload[:username]
+		@user.password = payload[:password]
 		@user.save
 
 		@user.to_json
