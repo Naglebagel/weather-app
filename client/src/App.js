@@ -3,6 +3,10 @@ import './App.css';
 import Show from './Show/Show.js';
 import Retrieve from './Retrieve/Retrieve.js';
 import Create from './CreateAccount/Create.js';
+import Login from './Login/Login.js';
+import EditAccount from './EditAccount/EditAccount.js'
+import UserShow from './UserShow/UserShow.js'
+const request = require('superagent');
 
 class App extends Component {
 
@@ -12,7 +16,12 @@ class App extends Component {
     this.state = {
       weatherCity: [],
       showWeather: false,
-      showNewAccount: false
+      showNewAccount: false,
+      loggedIn: false,
+      currentUser: '',
+      loggedInString: '',
+      logInError: '',
+      enableEdit: false,
     }
   }
 
@@ -27,27 +36,139 @@ getReqCity = (city, country) => {
       const state = this.state;
       state.weatherCity.shift();
       state.weatherCity.push(data);
-      console.log(state.weatherCity);
       state.showWeather = !this.state.showWeather
       this.setState(state)
     })
 }
 
+postCreate = (username, password) => {
+  const that = this;
+    request.post("http://localhost:9292/users")
+    .type('form')
+    .send({username: username, password: password})
+    .end(function(err, data){
+      console.log(data);
+      const state = that.state
+      state.showNewAccount = !that.state.showNewAccount
+      that.setState(state)
+    })
+  }
+
 newAccount = () => {
   const state = this.state;
   state.showNewAccount = !this.state.showNewAccount;
+  state.loggedIn = false;
   this.setState(state);
 }
 
+newLogin = () => {
+  const state = this.state;
+  state.loggedIn = !this.state.loggedIn;
+  state.showNewAccount = false;
+  this.setState(state);
+}
+
+newEdit = () => {
+  const state = this.state;
+  state.enableEdit = !this.state.enableEdit;
+  this.setState(state);
+}
+
+currentUser = (data) => {
+  const state = this.state;
+  state.loggedUser = data.req._data.username
+  this.setState(state);
+}
+
+userLogout = () => {
+  const that = this;
+  request.get("http://localhost:9292/users/logout")
+    .withCredentials()
+    .end(function(err, data){
+      const state = that.state
+      state.loggedIn = !that.state.loggedIn;
+      state.loggedInString = data.text;
+      that.setState(state);
+    })
+}
+
+postLogin = (username, password) => {
+  console.log(this, ' in post login')
+  const that = this;
+    request.post("http://localhost:9292/users/login")
+    .type('form')
+    .send({username: username, password: password})
+    .withCredentials()
+    .end(function(err, data){
+      console.log(data);
+      if (err){
+        console.log(err)
+      } else if(data){
+         if (data.text === 'hey your logged in'){
+               const state = that.state;
+               state.currentUser = data.req._data.username;
+               state.loggedInString = data.text;
+               console.log(state)
+               that.setState(state);
+        } else if (data.text === ''){
+            const state = that.state;
+            state.logInError = "Username or Password incorrect, please try again.";
+            that.setState(state);
+        }
+      }
+    })
+  }
+
   render() {
+    if (this.state.loggedInString === ''){
     return (
-      <div className="App">
-      <h1>Whats the Weather?</h1>
-        <h2 onClick={this.newAccount}>Create Account</h2>
-        {this.state.showNewAccount ? <Create getReqCity={this.getReqCity}/> : null}
+      <div className="App container-fluid">
+      <header>
+        <h1>Weather App</h1>
+        <nav>
+          <ul>
+          <div className="row">
+          <div className="col">
+            <li onClick={this.newAccount}>Create Account</li>
+            </div>
+            <div className="col">
+            <li onClick={this.newLogin}>Login</li>
+            </div>
+            </div>
+          </ul>
+        </nav>
+      </header>
+      <div className="infoStuff">
+        {this.state.showNewAccount ? <Create getReqCity={this.getReqCity} postCreate={this.postCreate}/> : null}
+        {this.state.loggedIn ? <Login getReqCity={this.getReqCity} postLogin={this.postLogin}/> : null}
         {this.state.showWeather ? <Retrieve getReqCity={this.getReqCity}/> : <Show weather={this.state.weatherCity} getReqCity={this.getReqCity} getReqZip={this.getReqZip}/>}
       </div>
+    </div>  
     );
+    } else if (this.state.loggedInString === 'hey your logged in'){
+      return(
+        <div className="App container-fluid">
+      <header>
+      <h1>Weather App</h1>
+        <nav>
+          <ul>
+          <div className="row">
+           <div className="col">
+            <li onClick={this.userLogout}>Logout</li>
+            </div>
+            <div className="col">
+            <li onClick={this.newEdit}>Add/Edit Cities</li>
+            </div>
+            </div>
+          </ul>
+        </nav>
+      </header>
+      <div>
+        {this.state.enableEdit ? <EditAccount currentUser={this.state.currentUser}/> : null}
+      </div>
+    </div> 
+        );
+    }
   }
 }
 

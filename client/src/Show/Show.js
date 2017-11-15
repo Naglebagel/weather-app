@@ -9,7 +9,7 @@ class Show extends Component {
 					<h4> Current weather in {weather.name}</h4>
 					<li><img alt={weather.weather[0].description} src={'http://openweathermap.org/img/w/'+ weather.weather[0].icon + '.png'}></img></li>
 					<li>{weather.weather[0].main}</li>
-					<li>{weather.main.temp}</li>
+					<li>{weather.main.temp} ℉</li>
 					</div>
 		})
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './Create.css'
+import './Login.css';
 
 
-class Create extends Component {
+class Login extends Component {
 
 	constructor(){
 		super();
@@ -23,7 +23,7 @@ class Create extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		this.props.postCreate(this.state.username, this.state.password);
+		this.props.postLogin(this.state.username, this.state.password);
 		const state = this.state;
 		state.username = '';
 		state.password = '';
@@ -35,10 +35,10 @@ class Create extends Component {
 		return(
 			<div>
 				<form onSubmit={this.handleSubmit}>
-					<h4>New Account</h4>
+					<h4>Account Login</h4>
 					<input onChange={this.storeInfo} name='username' type='text' placeholder='Username'/>
 					<input onChange={this.storeInfo} name='password' type='password' placeholder='Password'/><br></br>
-					<button>Create Account</button>
+					<button>Sign In</button>
 				</form>
 			</div>
 			)
@@ -46,6 +46,6 @@ class Create extends Component {
 	}
 }
 
-export default Create
+export default Login
 
 

@@ -1,3 +1,21 @@
+header{
+  background-color: #173F73;
+  width: 100%;
+  margin-top: 50px;
+}
+
+button{
+    background-color: #F2C53D;
+    color: #173F73;
+    border-radius: 25%;
+    margin-top: 5%;
+    margin-bottom: 2%;
+  }
+
+.infoStuff{
+  background-color: #173F73;
+}
+
 .App {
   text-align: center;
 }
