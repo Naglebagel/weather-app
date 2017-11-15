@@ -4,11 +4,11 @@ CREATE DATABASE weather;
 
 CREATE TABLE users(
 	id SERIAL PRIMARY KEY,
-	username VARCHAR(32),
+	username VARCHAR(32) UNIQUE,
 	password_digest VARCHAR(60)
 );
 
-CREATE TABLE citys(
+CREATE TABLE cities(
 	id SERIAL PRIMARY KEY,
 	cityname VARCHAR(255),
 	countrycode VARCHAR(10),

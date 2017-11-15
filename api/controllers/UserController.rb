@@ -1,8 +1,8 @@
 class UserController < AppController
 
-	options "*" do
-    	response.headers["Access-Control-Allow-Methods"] = "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS"
-	end
+	# options "*" do
+ #    	response.headers["Access-Control-Allow-Methods"] = "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS"
+	# end
 
 	get '/' do
 		# response['Access-Control-Allow-Origin'] = '*'
@@ -10,12 +10,20 @@ class UserController < AppController
 		@user.to_json
 	end
 
+	get '/cities' do
+		@user = User.find_by(username: session[:username])
+		@usercities = @user.cities
+
+		p @usercities
+
+		@usercities.to_json
+	end	
+
 	post '/' do 
-		payload = params 
-    	payload = JSON.parse(request.body.read).symbolize_keys
+		
 		@user = User.new
-		@user.username = payload[:username]
-		@user.password = payload[:password]
+		@user.username = params[:username]
+		@user.password = params[:password]
 		@user.save
 
 		@user.to_json
@@ -26,8 +34,25 @@ class UserController < AppController
 		@password = params[:password]
 		@user = User.find_by(username: params[:username])
 
+	
+
+		session[:username] = @user[:username]
+		session[:id] = @user.id
+
+		p session
+
 		if @user && @user.authenticate(@password)
 			'hey your logged in'
 		end
 	end
+
+	get '/logout' do
+		session.clear
+
+		p session
+	end	
 end
+
+
+
+

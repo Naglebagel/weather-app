@@ -8,5 +8,5 @@ require './models/CityModel'
 require './models/UserModel'
 
 map('/') {run AppController}
-map('/citys') {run CityController}
+map('/cities') {run CityController}
 map('/users') {run UserController}
