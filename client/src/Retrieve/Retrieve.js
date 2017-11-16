@@ -17,7 +17,6 @@ class Retrieve extends Component {
 		const name = e.currentTarget.name;
 		state[name] = e.currentTarget.value;
 		this.setState(state);
-		console.log(this.state)
 	}
 
 	handleSubmit = (e) => {
@@ -36,7 +35,7 @@ class Retrieve extends Component {
 			<div>
 				<form onSubmit={this.handleSubmit}>
 					<h4>Enter a City Name to obtain weather</h4>
-					<input onChange={this.storeInfo} name="cityName" placeholder="City"/>
+					<input onChange={this.storeInfo} name="cityName" placeholder="City"/><br></br>
 					<input onChange={this.storeInfo} name="countryCode" placeholder="Country"/><br></br> 
 					<button>Retrieve Weather</button>
 				</form>

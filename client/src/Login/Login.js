@@ -18,7 +18,6 @@ class Login extends Component {
 		const name = e.currentTarget.name;
 		state[name] = e.currentTarget.value;
 		this.setState(state);
-		console.log(this.state)
 	}
 
 	handleSubmit = (e) => {
@@ -36,7 +35,7 @@ class Login extends Component {
 			<div>
 				<form onSubmit={this.handleSubmit}>
 					<h4>Account Login</h4>
-					<input onChange={this.storeInfo} name='username' type='text' placeholder='Username'/>
+					<input onChange={this.storeInfo} name='username' type='text' placeholder='Username'/><br></br>
 					<input onChange={this.storeInfo} name='password' type='password' placeholder='Password'/><br></br>
 					<button>Sign In</button>
 				</form>

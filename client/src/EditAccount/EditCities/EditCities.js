@@ -18,8 +18,6 @@ changeCityInfo = (cityname, countrycode, cityId) => {
     .send({_method: 'put', id: cityId, cityname: cityname, countrycode: countrycode})
     .end(function(err, data){
 
-    	console.log(data)
-
     })
 }
 
@@ -28,7 +26,6 @@ changeCityInfo = (cityname, countrycode, cityId) => {
 		const name = e.currentTarget.name;
 		state[name] = e.currentTarget.value;
 		this.setState(state);
-		console.log(this.state)
 	}
 
 	handleSubmit = (e) => {

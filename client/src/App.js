@@ -4,8 +4,8 @@ import Show from './Show/Show.js';
 import Retrieve from './Retrieve/Retrieve.js';
 import Create from './CreateAccount/Create.js';
 import Login from './Login/Login.js';
-import EditAccount from './EditAccount/EditAccount.js'
-import UserShow from './UserShow/UserShow.js'
+import EditAccount from './EditAccount/EditAccount.js';
+import UserShow from './UserShow/UserShow.js';
 const request = require('superagent');
 
 class App extends Component {
@@ -22,6 +22,8 @@ class App extends Component {
       loggedInString: '',
       logInError: '',
       enableEdit: false,
+      userCities: [],
+      userCitiesDisplay: []
     }
   }
 
@@ -41,13 +43,38 @@ getReqCity = (city, country) => {
     })
 }
 
+userCities = () => {
+    const that = this;
+     request.get("http://localhost:9292/users/cities")
+    .withCredentials()
+    .end(function(err, data){
+      console.log(data)
+      if (err){
+        console.log(err)
+      } else if(data){
+        console.log(data, 'this is userShow calling for a users cities')
+        const array = JSON.parse(data.text)
+        for (let i = 0; i < array.length; i++){
+          fetch('http://api.openweathermap.org/data/2.5/weather?q=' + array[i].cityname +','+ array[i].countrycode +'&units=imperial&APPID=13bbcfeda97fb1726ea42ebf39817e5a')
+            .then(response => response.json())
+            .then(data => {
+              const state = that.state;
+              console.log(data)
+              state.userCitiesDisplay.push(data)
+              console.log(state.userCitiesDisplay, 'this is the array to map')
+              that.setState(state)
+            })
+        }
+      }
+    })
+}
+
 postCreate = (username, password) => {
   const that = this;
     request.post("http://localhost:9292/users")
     .type('form')
     .send({username: username, password: password})
     .end(function(err, data){
-      console.log(data);
       const state = that.state
       state.showNewAccount = !that.state.showNewAccount
       that.setState(state)
@@ -88,19 +115,32 @@ userLogout = () => {
       const state = that.state
       state.loggedIn = !that.state.loggedIn;
       state.loggedInString = data.text;
+      state.userCitiesDisplay = [];
       that.setState(state);
     })
 }
 
+postEdit = (cityname, countrycode) => {
+  const that = this;
+      request.post("http://localhost:9292/cities/create")
+      .type('form')
+      .withCredentials()
+      .send({cityname: cityname, countrycode: countrycode})
+      .end(function(err, data){
+        const state = that.state
+        state.enableEdit = !that.state.enableEdit
+        state.userCitiesDisplay = []
+        that.setState(state)
+      })
+  }
+
 postLogin = (username, password) => {
-  console.log(this, ' in post login')
   const that = this;
     request.post("http://localhost:9292/users/login")
     .type('form')
     .send({username: username, password: password})
     .withCredentials()
     .end(function(err, data){
-      console.log(data);
       if (err){
         console.log(err)
       } else if(data){
@@ -108,7 +148,6 @@ postLogin = (username, password) => {
                const state = that.state;
                state.currentUser = data.req._data.username;
                state.loggedInString = data.text;
-               console.log(state)
                that.setState(state);
         } else if (data.text === ''){
             const state = that.state;
@@ -123,6 +162,8 @@ postLogin = (username, password) => {
     if (this.state.loggedInString === ''){
     return (
       <div className="App container-fluid">
+      <div id="background">
+      </div>
       <header>
         <h1>Weather App</h1>
         <nav>
@@ -164,7 +205,7 @@ postLogin = (username, password) => {
         </nav>
       </header>
       <div>
-        {this.state.enableEdit ? <EditAccount currentUser={this.state.currentUser}/> : null}
+        {this.state.enableEdit ? <EditAccount currentUser={this.state.currentUser} postEdit={this.postEdit}/> : <UserShow userCities={this.userCities} dispArr={this.state.userCitiesDisplay}/>}
       </div>
     </div> 
         );

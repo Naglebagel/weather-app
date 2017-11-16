@@ -18,7 +18,6 @@ class Create extends Component {
 		const name = e.currentTarget.name;
 		state[name] = e.currentTarget.value;
 		this.setState(state);
-		console.log(this.state)
 	}
 
 	handleSubmit = (e) => {

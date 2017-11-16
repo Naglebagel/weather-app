@@ -46,14 +46,6 @@ class EditAccount extends Component {
     })
 }
 
-	postEdit = (cityname, countrycode) => {
-	    request.post("http://localhost:9292/cities/create")
-	    .type('form')
-	    .withCredentials()
-	    .send({cityname: cityname, countrycode: countrycode})
-	    .end(function(err, data){})
-  }
-
   deleteCity = (e) => {
   	const that = this;
 	request.post("http://localhost:9292/cities/" + e.currentTarget.value)
@@ -77,7 +69,7 @@ class EditAccount extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		this.postEdit(this.state.cityname, this.state.countrycode);
+		this.props.postEdit(this.state.cityname, this.state.countrycode);
 		const state = this.state;
 		state.cityname = '';
 		state.countrycode = '';
